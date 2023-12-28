@@ -1,18 +1,41 @@
 import { pipeline } from 'https://cdn.jsdelivr.net/npm/@xenova/transformers@2.9.0/dist/transformers.min.js';
-let sourceText = "What isn't saved (will be lost)"
 let DIMENSION = 384;
-
 const extractor = await pipeline('feature-extraction', 'Xenova/all-MiniLM-L6-v2');
-const goal =(await extractor(sourceText, {convert_to_tensor:'True', pooling: 'mean', normalize: true }))[0];
-document.getElementById("titleText").innerHTML = sourceText;
+document.getElementById ("submitButton").addEventListener ("click", sumbission);
+document.getElementById ("resetButton").addEventListener ("click", resetAll);
+let finished = 'False';
+let submitted = 'False';
+let currentLine = '';
+var goal =[];
 
-main(sourceText, goal);
+async function sumbission(){
+  if (document.getElementById("textEntry").value=='')
+  {document.getElementById("textEntry").value = "What isn't saved (will be lost)";}
+  currentLine = document.getElementById("textEntry").value;
+  goal =(await extractor(currentLine, {convert_to_tensor:'True', pooling: 'mean', normalize: true }))[0];
+  // console.log(currentLine);
+  if (submitted=='True'){submitted='False'};
+  if (submitted=='False'){submitted='True'};
+}
 
-async function main(src, goal){
-  let line = src;
-for (let i= 0; i<sourceText.length; i++){
-    line = await findWinner(line, goal)
-}};
+setInterval(async function(){
+  if (submitted=='True'){
+    if (finished=='False'){
+      addDiv(currentLine)
+      // currentLine = currentLine.slice(0,currentLine.length-1);
+      currentLine = await findWinner(currentLine, goal)
+      if (currentLine.length==0){finished='True'}
+    }}
+  },200)
+
+function resetAll(){
+  finished = 'False';
+  submitted = 'False';
+  document.getElementById("textEntry").value='';
+  while (resultText.hasChildNodes()){
+    resultText.removeChild(resultText.firstChild)
+  }
+}
 
 async function getEmbedding(src){
   let result = (await extractor(src, {convert_to_tensor:'True', pooling: 'mean', normalize: true }))[0];
@@ -30,8 +53,9 @@ async function findWinner(src, goal){
   }
   console.log("scores: ", scores)
   candidates.sort((d2,d1)=>{return scores[d1]-scores[d2]});
-  document.getElementById("resultText").innerHTML += candidates[0]+"<br />";
+  // document.getElementById("resultText").innerHTML += candidates[0]+"<br />";
   return candidates[0]
+
 }
 
 function removeNth (src){
@@ -59,4 +83,11 @@ function dotProduct(vectorA, vectorB) {
 
 function magnitude(vector) {
     return Math.sqrt(dotProduct(vector, vector));
+}
+
+function addDiv(text) {
+    var objTo = document.getElementById('resultText')
+    var divtest = document.createElement("div");
+    divtest.innerHTML = currentLine;
+    objTo.appendChild(divtest)
 }

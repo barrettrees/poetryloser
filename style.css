@@ -114,12 +114,15 @@ body {
   font-family: HK Grotesk;
   background-color: var(--color-bg);
 }
+.mytext {
+    width: 300px;
+}
 
 /* Page structure */
 .wrapper {
   min-height: var(--wrapper-height);
   display: grid;
-  place-items: center;
+  place-items: start;
   margin: 0 1rem;
 }
 .content {
@@ -141,16 +144,16 @@ body {
 }
 
 /* Very light scaling for our illustration */
-.illustration {
+/*.illustration {
   max-width: 100%;
   max-height: var(--image-max-width);
   margin-top: var(--image-margin);
-}
+}*/
 
 /* Instructions */
-.instructions {
+/*.instructions {
   margin: 1rem auto 0;
-}
+}*/
 
 /* Button - Add it from the README instructions */
 button,
@@ -171,20 +174,20 @@ h2 {
 }
 
 /* Interactive image */
-.illustration:active {
+/*.illustration:active {
   transform: translateY(5px);
-}
+}*/
 
 /* Button dip
 - Toggling this class on and off will move it down and up again
 - The button transition property above determines the speed of the translate (500ms)
 */
-.dipped {
-  transform: translateY(5px);
+/*.dipped {
+  transform: translateY(5px);*/
 }
 
 /* Links that open files in the editor */
-.fileopener {
+/*.fileopener {
   cursor:pointer;
   font-weight:bold;
   border-bottom:3px solid var(--color-primary);
@@ -193,3 +196,4 @@ h2 {
 .fileopener:hover {
   border-bottom:3px solid var(--color-secondary);
 }
+*/
