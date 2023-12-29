@@ -6,17 +6,35 @@ document.getElementById ("resetButton").addEventListener ("click", resetAll);
 let finished = 'False';
 let submitted = 'False';
 let currentLine = '';
+let fulltext = '';
+let textColorMask =[];
 var goal =[];
 
 async function sumbission(){
   if (document.getElementById("textEntry").value=='')
   {document.getElementById("textEntry").value = "What isn't saved (will be lost)";}
   currentLine = document.getElementById("textEntry").value;
+  fulltext = currentLine;
+  textColorMask= colorize(fulltext);
   goal =(await extractor(currentLine, {convert_to_tensor:'True', pooling: 'mean', normalize: true }))[0];
   // console.log(currentLine);
   if (submitted=='True'){submitted='False'};
   if (submitted=='False'){submitted='True'};
 }
+
+function colorize (fulltext){
+let colors = ['#fff7ec','#fee8c8','#fdd49e','#fdbb84','#fc8d59','#ef6548','#d7301f','#b30000','#7f0000'];
+let textColorArray =[]
+let colorIndex=0;
+let i = 0;
+ for (i in fulltext){
+  textColorArray[i] = colors[colorIndex]
+  if (fulltext[i]==' '){colorIndex +=1};
+  if (colorIndex>colors.length){colorIndex=0};
+} return(textColorArray);
+}
+
+  
 
 setInterval(async function(){
   if (submitted=='True'){
@@ -26,7 +44,7 @@ setInterval(async function(){
       currentLine = await findWinner(currentLine, goal)
       if (currentLine.length==0){finished='True'}
     }}
-  },200)
+  },2)
 
 function resetAll(){
   finished = 'False';
@@ -45,14 +63,18 @@ async function getEmbedding(src){
 async function findWinner(src, goal){
   let candidates = removeNth(src);
   let scores = {}
+  let order = {}
   for (let i =0; i < candidates.length; i++){
     let candidate = candidates[i];
     const candidateEmbedding = await getEmbedding(candidate);
     let score = cosineSimilarity(candidateEmbedding.tolist(),goal.tolist());
     scores[candidate] = score;
+    order[candidate]=i;
   }
   console.log("scores: ", scores)
   candidates.sort((d2,d1)=>{return scores[d1]-scores[d2]});
+  console.log("winner index:", order[candidates[0]]);
+  textColorMask.splice(order[candidates[0]],1);
   // document.getElementById("resultText").innerHTML += candidates[0]+"<br />";
   return candidates[0]
 
@@ -88,6 +110,14 @@ function magnitude(vector) {
 function addDiv(text) {
     var objTo = document.getElementById('resultText')
     var divtest = document.createElement("div");
-    divtest.innerHTML = currentLine;
+    var coloredText = "";
+    let s = 0;
+    for (s in currentLine)
+    {
+      coloredText+="<span style='color:"+textColorMask[s]+"'>"+currentLine[s]+"</span>"
+      s+=1
+    }
+    divtest.innerHTML = coloredText;
     objTo.appendChild(divtest)
 }
+

@@ -143,6 +143,9 @@ body {
   margin: 0;
 }
 
+h2{
+  font-size: larger;
+}
 /* Very light scaling for our illustration */
 /*.illustration {
   max-width: 100%;
