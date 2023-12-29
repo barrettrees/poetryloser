@@ -4,7 +4,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link rel="icon" href="https://barrettrees.com/favicon.ico" />
-    <title>Hello World!</title>
+    <title>Poetry Loser</title>
     <link rel="stylesheet" href="./style.css" />
     <script src="./script.js" type="module" defer></script>
   </head>
@@ -16,15 +16,27 @@
         <h1 class="title"><span id="titleText"></span></h1>
         <div class="body">
           <div id="controls">
-            <!-- <label>Sentence:</label> -->
             <input type="text" id="textEntry" name="textEntry" placeholder="What isn't saved (will be lost)" maxlength="1024" class="mytext">
             <input type="button" value="Submit" id="submitButton">
-            <input type="button" value="Reset" id="resetButton">
+            <input type="button" value="Random" id="randomButton">
+            <input type="button" value="About" id="aboutButton">
+            <br> Waluigi Mode:<input type="checkbox"  id="waluigiMode">
+          </div>
+          <div id="aboutText" style="display: none;">
+            <br>
+            <img src="max_meltquote.png" alt="Max: i figured out how to infotheoretically melt a sentence">
+            <br>
+            On each line, one character is removed. The removed character should be the one that least changes the meaning of the text. Change in meaning is here operationalized as the semantic distance of the newly generated sentence from the original text according to the sentence embeddding model listed below. 
+            <br><br>
+            <div id= "credit" style="font-size: smaller;">
+            Concept: <a href="https://mkremins.github.io/">Max Kreminski</a> <br>
+            Web Version: <a href="https://barrettrees.com">Barrett Anderson</a> <br>
+            Model: 'all-MiniLM-L6-v2' from <a href="https://www.sbert.net/">SentenceTransformers</a> by Nils Reimer & Iryna Gurevych via
+            <a href="https://huggingface.co/docs/transformers.js/main/en/index">Transformers.js </a> by Joshua Lochner (xenova) & <a href="https://github.com/xenova/transformers.js/graphs/contributors">additional contributors</a>. <br>
+            Color Palette: <a href="https://colorbrewer2.org">Color Brewer</a> by Cynthia Brewer & Mark Harrower, selected by <a href="https://jazztap.github.io/">Jasmine Otto</a>.
+            </div>         
           </div>
           <h2><span id="resultText"></span></h2>
-          <p>
-            <span id="additionalText"></span>
-          </p>
         </div>
       </div>
     </div>
