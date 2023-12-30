@@ -177,6 +177,11 @@ input {
 
 /* Subheading */
 h2 {
+/*  color: #2800FF;*/
+  color: #00ff28;
+}
+
+score{
   color: #2800FF;
 }
 

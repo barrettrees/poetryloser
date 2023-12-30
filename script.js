@@ -4,6 +4,9 @@ const extractor = await pipeline('feature-extraction', 'Xenova/all-MiniLM-L6-v2'
 document.getElementById ("submitButton").addEventListener ("click", submission);
 document.getElementById ("aboutButton").addEventListener ("click", toggleAbout);
 document.getElementById ("randomButton").addEventListener ("click", randomize);
+document.getElementById ("darkMode").addEventListener ("click", darkmode);
+
+
 let finished = 'False';
 let submitted = 'False';
 let colors = ['#fff7ec','#fee8c8','#fdd49e','#fdbb84','#fc8d59','#ef6548','#d7301f','#b30000','#7f0000'];
@@ -11,7 +14,101 @@ let currentLine = '';
 let fulltext = '';
 let textColorMask =[];
 var goal =[];
+let hackerCandidates = []
+let hackerCandidate = ""
+let hackerIndex = 0;
+let hackerBestScore = 0;
+let currentChild = document.getElementById("resultText").lastChild;
+let hackerBestCandidate= "";
+let hackerBestIndex = -1;
+let textColorMaskDisplay =[];
 
+document.body.onload = darkmode()
+
+setInterval(async function(){
+  if (document.getElementById("hackerMode").checked==true){
+  if (submitted=='True'){
+    if (finished=='False'){
+      if (document.getElementById("resultText").hasChildNodes()==false) 
+        {addDiv(currentLine)}
+      else{
+        currentChild = document.getElementById("resultText").lastChild
+        hackerCandidate = hackerCandidates[hackerIndex]
+        const hackerCandidateEmbedding = await getEmbedding(hackerCandidate);
+        let hackerScore = cosineSimilarity(hackerCandidateEmbedding.tolist(),goal.tolist());
+        textColorMaskDisplay = textColorMask.slice()
+        textColorMaskDisplay.splice(hackerIndex,1)
+        let hackerCandidateDisplay =""
+        let s = 0;
+        for (s in hackerCandidate)
+        {
+          hackerCandidateDisplay+="<span style='color:"+textColorMask[s]+"'>"+hackerCandidate[s]+"</span>"
+          s+=1
+        }
+        currentChild.innerHTML = "<div class=score> "+hackerScore.toFixed(2)+": "+hackerCandidateDisplay
+        if (hackerScore>hackerBestScore)
+          {
+            hackerBestIndex = hackerIndex;
+            hackerBestScore = hackerScore;
+            hackerBestCandidate = hackerCandidate;
+          }
+        // console.log(hackerCandidate, hackerIndex)
+        if (hackerIndex == hackerCandidates.length-2)
+        {
+          console.log('round over')
+          // console.log (hackerBestCandidate)
+          // addDiv(hackerBestCandidate)
+          hackerCandidates = removeNth(hackerBestCandidate);
+          hackerIndex = 0;
+          hackerBestScore = 0;
+          textColorMask.splice(hackerBestIndex,1);
+          
+          let hackerCandidateDisplay =""
+          let s = 0;
+          for (s in hackerCandidate)
+          {
+          hackerCandidateDisplay+="<span style='color:"+textColorMask[s]+"'>"+hackerBestCandidate[s]+"</span>"
+          s+=1}
+          // console.log(hackerCandidateDisplay)
+
+          addDiv(hackerCandidateDisplay)
+          // addDiv(hackerBestCandidate)
+          hackerCandidate = ""
+          hackerBestCandidate = ""
+          console.log(currentLine)
+        }
+        else
+        {
+        hackerIndex+=1 
+        }
+      }
+      // currentLine = currentLine.slice(0,currentLine.length-1);
+      // console.log(currentLine)
+      // currentLine = await findWinner(currentLine, goal)
+      if (hackerBestCandidate.length==1){finished='True'}
+    }}}
+  },2)
+
+
+function darkmode(){
+  if (document.getElementById("darkMode").checked==false)
+    {
+      console.log("darkmode disabled")
+      colors = ['#fff7ec','#fee8c8','#fdd49e','#fdbb84','#fc8d59','#ef6548','#d7301f','#b30000','#7f0000']
+      document.body.style.backgroundColor = "#99d8c9";
+      document.body.style.color ="black";
+      colorLinks("black");
+
+}
+  else
+    {
+      console.log("darkmode enabled")
+      colors = ['#f7fcf5','#e5f5e0','#c7e9c0','#a1d99b','#74c476','#41ab5d','#238b45','#006d2c','#00441b']
+      document.body.style.backgroundColor = "black";
+      document.body.style.color ="white";
+      colorLinks("white");
+}
+}
 
 let sampleText = ["The propeller's spinning blades held acquaintance with the waves", 
   "Do you believe what you're saying? Yeah right now but not that often!",
@@ -28,13 +125,13 @@ let samplePalettes =[
 ['#fff7fb','#ece2f0','#d0d1e6','#a6bddb','#67a9cf','#3690c0','#02818a','#016c59','#014636']
 ]
 
+
 function randomize(){
   if (submitted == 'False'){
   
   let oldcolors = colors
   let oldtext = document.getElementById("textEntry").value
   colors = samplePalettes[Math.floor(Math.random() * samplePalettes.length)]
-  console.log(colors)
   document.getElementById("textEntry").value = sampleText[Math.floor(Math.random() * sampleText.length)]
   if (oldtext == document.getElementById("textEntry").value){
     if (oldcolors == colors){
@@ -72,6 +169,7 @@ async function submission(){
     fulltext = currentLine;
     textColorMask= colorize(fulltext);
     goal =(await extractor(currentLine, {convert_to_tensor:'True', pooling: 'mean', normalize: true }))[0];
+    hackerCandidates = removeNth(currentLine);
     // console.log(currentLine);
     document.getElementById('submitButton').value= "Reset"
   }
@@ -95,14 +193,17 @@ let i = 0;
   
 
 setInterval(async function(){
+  if (document.getElementById("hackerMode").checked==false){
   if (submitted=='True'){
     if (finished=='False'){
       addDiv(currentLine)
-      // currentLine = currentLine.slice(0,currentLine.length-1);
       currentLine = await findWinner(currentLine, goal)
       if (currentLine.length==0){finished='True'}
-    }}
+    }}}
   },2)
+
+
+
 
 function resetAll(){
   finished = 'False';
@@ -184,3 +285,14 @@ function addDiv(text) {
     objTo.appendChild(divtest)
 }
 
+function colorLinks(hex)
+{
+    var links = document.getElementsByTagName("a");
+    for(var i=0;i<links.length;i++)
+    {
+        if(links[i].href)
+        {
+            links[i].style.color = hex;  
+        }
+    }  
+}
