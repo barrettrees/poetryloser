@@ -59,9 +59,10 @@ setInterval(async function(){
       const percentageComplete = (currentProgress/numberSteps(fulltext.length))*100
       var scoreDisplay = "<div id=\"myProgress\"><div id=\"myBar\"></div></div>"
       timediff = (new Date()- date1)/1000
-      scoreDisplay+="<div class=score> Completion: "+percentageComplete.toFixed(2)+"% Time: "+timediff.toFixed(3)+"secs Score: "+score.toFixed(2)+" Variation:"+candidate+"</div>"
+      scoreDisplay+="<div class=score> Completion: "+percentageComplete.toFixed(2)+"% Time: "+timediff.toFixed(3)+"secs<br> Score: "+score.toFixed(2)+" Variation:"+candidate+"</div>"
       document.getElementById('scoreZone').innerHTML = scoreDisplay
-      document.getElementById("myBar").style.width = percentageComplete+"%" 
+      document.getElementById("myBar").style.width = percentageComplete+"%"
+      // document.getElementById("myProgress").textContent = candidate 
       innerIndex+=1;
       if (innerIndex==candidates.length)
         {
@@ -76,6 +77,9 @@ setInterval(async function(){
           addDiv(candidate)
           if (candidate.length==1){
             finished = 'True';
+            console.log("\""+fulltext+"\" ("+fulltext.length+" characters) processed in "+timediff.toFixed(3)+" seconds.")
+            scoreDisplay=""
+            document.getElementById('scoreZone').innerHTML = scoreDisplay
           }
           candidates = removeNth(candidate)
       //     bestCandidate = candidates[0]
@@ -236,7 +240,7 @@ function toggleAbout(){
 
 function toggleScoring(){
   var scoring = document.getElementById("scoreZone")
-  if (document.getElementById("showScoring").checked==false)
+  if (document.getElementById("showScoring").checked==true)
     {scoring.style.display = "none"}
   else
   scoring.style.display = ""
